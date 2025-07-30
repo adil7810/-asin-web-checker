@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ASIN Price & IP Checker</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    textarea { width: 100%; height: 150px; }
+    button { padding: 0.5rem 1rem; margin-top: 1rem; }
+    .result { margin-top: 2rem; }
+    .asin-result { border-bottom: 1px solid #ccc; padding: 1rem 0; }
+  </style>
+</head>
+<body>
+  <h2>ASIN Price & IP Alert Checker</h2>
+  <textarea id="asins" placeholder="Enter ASINs, one per line..."></textarea>
+  <br>
+  <button onclick="startCheck()">Check ASINs</button>
+
+  <div class="result" id="results"></div>
+
+  <script>
+    async function fetchProductPage(asin) {
+      const url = `https://corsproxy.io/?https://www.amazon.com/dp/${asin}`;
+      try {
+        const res = await fetch(url);
+        const text = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+
+        const priceEl = doc.querySelector('#priceblock_ourprice, #priceblock_dealprice, .a-price .a-offscreen');
+        const price = priceEl ? priceEl.textContent.trim() : 'Price not found';
+
+        const ipEl = doc.querySelector('#bylineInfo_feature_div b') || doc.querySelector('#bylineInfo');
+        const ipReason = ipEl ? ipEl.textContent.trim() : 'No IP alert';
+
+        return { asin, price, ipReason };
+      } catch (err) {
+        return { asin, price: 'Error', ipReason: 'Error fetching data' };
+      }
+    }
+
+    async function startCheck() {
+      const asins = document.getElementById('asins').value.split('\n').map(s => s.trim()).filter(Boolean);
+      const resultsEl = document.getElementById('results');
+      resultsEl.innerHTML = 'Checking...';
+
+      const results = [];
+      for (const asin of asins) {
+        const data = await fetchProductPage(asin);
+        results.push(data);
+        resultsEl.innerHTML = results.map(r => `
+          <div class="asin-result">
+            <strong>${r.asin}</strong><br>
+            Price: ${r.price}<br>
+            IP Alert Reason: ${r.ipReason}
+          </div>
+        `).join('');
+      }
+    }
+  </script>
+</body>
+</html>
