@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ASIN IP Alert & Price Checker</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, button { padding: 10px; margin: 5px 0; width: 100%; }
+    .result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h2>Amazon ASIN IP Alert & Price Checker</h2>
+  <input type="text" id="asinInput" placeholder="Enter ASIN..." />
+  <button onclick="checkASIN()">Check ASIN</button>
+
+  <div id="result" class="result" style="display:none;"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
